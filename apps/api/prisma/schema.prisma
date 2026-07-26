@@ -1,0 +1,77 @@
+generator client {
+
+  provider = "prisma-client-js"
+
+}
+
+
+
+datasource db {
+
+  provider = "mysql"
+
+  url      = env("DATABASE_URL")
+
+}
+
+
+
+enum Permission {
+
+  read
+
+  write
+
+  readwrite
+
+}
+
+
+
+model User {
+
+  id         String     @id @default(uuid())
+
+  login      String     @unique
+
+  password   String
+
+  permission Permission
+
+  token      String?    @db.Text
+
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+
+
+  @@map("users")
+
+}
+
+
+
+model Inspection {
+
+  id                  String   @id @default(uuid())
+
+  nome                String
+
+  nomeEmbarcacao      String   @map("nome_embarcacao")
+
+  responsavelInspecao String   @map("responsavel_inspecao")
+
+  horarioInicio       DateTime @map("horario_inicio")
+
+  horarioFim          DateTime @map("horario_fim")
+
+  createdAt           DateTime @default(now()) @map("created_at")
+
+
+
+  @@map("inspections")
+
+}
+
+

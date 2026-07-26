@@ -1,0 +1,11 @@
+node_modules
+apps/*/node_modules
+apps/web/.next
+apps/api/dist
+.git
+.gitignore
+*.md
+.env
+.env.*
+apps/api/.env
+apps/web/.env.local
