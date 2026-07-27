@@ -4,17 +4,29 @@ import { verifyToken } from "../lib/jwt";
 import { AppError } from "./errorHandler";
 
 const PUBLIC_ROUTES = [
-  { method: "GET", path: "/api/health" },
-  { method: "POST", path: "/api/login" },
-  { method: "POST", path: "/api/logout" },
-  { method: "POST", path: "/api/inspections/datasDisponiveis" },
-  { method: "POST", path: "/api/inspections/horariosDisponiveis" },
-  { method: "POST", path: "/api/inspections" },
+  { method: "GET", path: "/health" },
+  { method: "POST", path: "/login" },
+  { method: "POST", path: "/logout" },
+  { method: "POST", path: "/inspections/datasDisponiveis" },
+  { method: "POST", path: "/inspections/horariosDisponiveis" },
+  { method: "POST", path: "/inspections" },
 ];
 
+function normalizePath(path: string): string {
+  const cleanPath = path.split("?")[0].replace(/\/$/, "") || "/";
+
+  if (cleanPath.startsWith("/api")) {
+    return cleanPath.slice(4) || "/";
+  }
+
+  return cleanPath;
+}
+
 function isPublicRoute(method: string, path: string): boolean {
+  const normalizedPath = normalizePath(path);
+
   return PUBLIC_ROUTES.some(
-    (route) => route.method === method && route.path === path
+    (route) => route.method === method && route.path === normalizedPath
   );
 }
 
@@ -71,6 +83,10 @@ export async function authMiddleware(
   _res: Response,
   next: NextFunction
 ) {
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
   if (isPublicRoute(req.method, req.path)) {
     try {
       await authenticateUser(req);

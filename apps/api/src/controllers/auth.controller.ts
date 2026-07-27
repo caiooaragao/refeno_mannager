@@ -9,6 +9,10 @@ const loginSchema = z.object({
 });
 
 const COOKIE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const USE_SECURE_COOKIE =
+  process.env.COOKIE_SECURE === "true" ||
+  (process.env.COOKIE_SECURE !== "false" &&
+    (process.env.FRONTEND_URL?.startsWith("https://") ?? false));
 
 export class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {
@@ -24,7 +28,7 @@ export class AuthController {
 
       res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: USE_SECURE_COOKIE,
         sameSite: "lax",
         maxAge: COOKIE_MAX_AGE_MS,
       });
