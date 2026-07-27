@@ -356,7 +356,7 @@ export function RefenoForm() {
               type="text"
               value={form.responsavelInspecao}
               onChange={(e) => handleChange("responsavelInspecao", e.target.value)}
-              placeholder="Nome do inspetor"
+              placeholder="Nome do responsável pela inspeção"
               disabled={loading}
             />
 
