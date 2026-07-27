@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface SiteHeaderProps {
   title?: string;
@@ -10,35 +12,28 @@ export function SiteHeader({
   subtitle,
 }: SiteHeaderProps) {
   return (
-    <header className="border-b border-slate-200 bg-white shadow-sm">
-      <div
-        className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4"
-        style={{ maxWidth: "64rem" }}
-      >
-        <div>
-          <Link
-            href="/"
-            className="text-xl font-bold text-blue-900 hover:text-blue-700"
-          >
-            {title}
-          </Link>
-          {subtitle && (
-            <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
-          )}
-        </div>
+    <header className="forest-glass-header sticky top-0 z-40">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 sm:px-6 sm:py-4 md:px-16">
+        <Link href="/forms/refeno" className="shrink-0">
+          <Image
+            src="/images/logo_refeno.png"
+            alt="REFENO - Regata Recife Fernando de Noronha"
+            width={180}
+            height={56}
+            className="h-10 w-auto sm:h-12"
+            priority
+          />
+        </Link>
 
-        <nav className="flex items-center gap-4 text-sm font-medium">
+        <nav className="flex items-center gap-2 text-sm font-medium sm:gap-4">
+          <ThemeToggle />
           <Link
             href="/forms/refeno"
-            className="text-blue-800 hover:text-blue-600"
+            className="cursor-pointer text-secondary transition-colors hover:text-primary"
           >
             Formulário
           </Link>
-          <Link
-            href="/admin"
-            className="rounded-lg px-3 py-1.5 text-white"
-            style={{ backgroundColor: "#1e5a8a" }}
-          >
+          <Link href="/admin" className="forest-btn-primary px-4 py-1.5 text-xs sm:text-sm">
             Admin
           </Link>
         </nav>

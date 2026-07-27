@@ -31,7 +31,7 @@ services:
     environment:
       DATABASE_URL: mysql://refeno:refeno@mysql:3306/refeno_manager
       API_PORT: 3333
-      SEED_ADMIN_LOGIN: dantenovas
+      SEED_ADMIN_LOGIN: dantenovaes
       SEED_ADMIN_PASSWORD: danterefeno
     depends_on:
       mysql:

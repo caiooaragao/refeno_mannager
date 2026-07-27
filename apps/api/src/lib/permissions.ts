@@ -12,3 +12,9 @@ export function assertCanWrite(permission: Permission): void {
     throw new AppError(403, "Usuário não tem permissão de escrita");
   }
 }
+
+export function assertCanReadWrite(permission: Permission): void {
+  if (permission !== "readwrite") {
+    throw new AppError(403, "Usuário não tem permissão de leitura e escrita");
+  }
+}

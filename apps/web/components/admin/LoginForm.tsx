@@ -4,77 +4,50 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/ui/Alert";
 import { FormField } from "@/components/ui/FormField";
-import { isAuthenticated, login, logout } from "@/lib/auth";
-
-const ADMIN_USER = process.env.NEXT_PUBLIC_ADMIN_USER ?? "dantenovas";
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "danterefeno";
+import { loginAdmin } from "@/lib/api";
+import { isAuthenticated, setAuthenticated } from "@/lib/auth";
+import { useConfirm } from "@/components/ui/ConfirmProvider";
 
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const confirm = useConfirm();
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    setLoggedIn(isAuthenticated());
-  }, []);
+    if (isAuthenticated()) {
+      router.replace("/admin/dashboard");
+    }
+  }, [router]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
-    const success = login(email, password, ADMIN_USER, ADMIN_PASSWORD);
-
-    if (success) {
-      setLoggedIn(true);
-      setEmail("");
-      setPassword("");
-    } else {
-      setError("Usuário ou senha inválidos");
+    if (!(await confirm("Tem certeza que deseja entrar?"))) {
+      return;
     }
 
-    setLoading(false);
-  }
+    setLoading(true);
 
-  function handleLogout() {
-    logout();
-    setLoggedIn(false);
-    router.refresh();
-  }
-
-  if (loggedIn) {
-    return (
-      <div
-        className="rounded-xl bg-white p-8 text-center shadow-sm"
-        style={{ border: "1px solid #d1dce6", maxWidth: "28rem", margin: "0 auto" }}
-      >
-        <h2 className="text-xl font-bold text-blue-900">Painel Admin</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Você está autenticado como administrador.
-        </p>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="mt-6 rounded-lg px-6 py-2.5 text-sm font-semibold text-white"
-          style={{ backgroundColor: "#b91c1c" }}
-        >
-          Sair
-        </button>
-      </div>
-    );
+    try {
+      await loginAdmin(login.trim(), password);
+      setAuthenticated(true);
+      router.push("/admin/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Usuário ou senha inválidos");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div
-      className="rounded-xl bg-white p-8 shadow-sm"
-      style={{ border: "1px solid #d1dce6", maxWidth: "28rem", margin: "0 auto" }}
-    >
+    <div className="forest-card mx-auto max-w-md p-8">
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold text-blue-900">Login Admin</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-headline-sm text-on-surface">Login Admin</h1>
+        <p className="mt-1 text-body-sm text-on-surface-variant">
           Acesse o painel administrativo
         </p>
       </div>
@@ -88,11 +61,11 @@ export function LoginForm() {
         autoComplete="off"
       >
         <FormField
-          id="email"
+          id="login"
           label="Usuário"
           type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
           placeholder="Digite seu usuário"
           disabled={loading}
         />
@@ -107,12 +80,7 @@ export function LoginForm() {
           disabled={loading}
         />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-lg px-6 py-3 font-semibold text-white disabled:opacity-60"
-          style={{ backgroundColor: "#1e5a8a" }}
-        >
+        <button type="submit" disabled={loading} className="forest-btn-primary">
           {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>

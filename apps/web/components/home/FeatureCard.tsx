@@ -5,12 +5,9 @@ interface FeatureCardProps {
 
 export function FeatureCard({ title, description }: FeatureCardProps) {
   return (
-    <article
-      className="rounded-xl bg-white p-6 shadow-sm"
-      style={{ border: "1px solid #d1dce6" }}
-    >
-      <h2 className="text-lg font-semibold text-blue-900">{title}</h2>
-      <p className="mt-2 text-sm text-slate-600">{description}</p>
+    <article className="forest-card p-6">
+      <h2 className="text-headline-sm text-on-surface">{title}</h2>
+      <p className="mt-2 text-body-sm text-on-surface-variant">{description}</p>
     </article>
   );
 }

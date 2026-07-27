@@ -5,19 +5,16 @@ export function isAuthenticated(): boolean {
   return sessionStorage.getItem(AUTH_KEY) === "true";
 }
 
-export function login(
-  user: string,
-  password: string,
-  expectedUser: string,
-  expectedPassword: string
-): boolean {
-  if (user === expectedUser && password === expectedPassword) {
+export function setAuthenticated(value: boolean): void {
+  if (typeof window === "undefined") return;
+
+  if (value) {
     sessionStorage.setItem(AUTH_KEY, "true");
-    return true;
+  } else {
+    sessionStorage.removeItem(AUTH_KEY);
   }
-  return false;
 }
 
 export function logout(): void {
-  sessionStorage.removeItem(AUTH_KEY);
+  setAuthenticated(false);
 }

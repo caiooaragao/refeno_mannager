@@ -6,10 +6,14 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
-    "db:up": "docker compose up -d",
-    "db:down": "docker compose down",
-    "db:migrate": "npm run db:migrate -w apps/api",
-    "db:studio": "npm run db:studio -w apps/api"
+    "db:up": "sh db.sh up",
+    "db:down": "sh db.sh stop",
+    "db:migrate": "sh db.sh migrate",
+    "db:seed": "sh db.sh seed",
+    "db:studio": "sh db.sh studio",
+    "app:docker": "sh docker-app.sh up",
+    "app:docker:api": "sh docker-app.sh api",
+    "app:docker:web": "sh docker-app.sh web"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

@@ -76,24 +76,26 @@ export function addDays(date: Date, days: number): Date {
   return next;
 }
 
-interface InspectionRecord {
-  id: string;
-  nome: string;
-  nomeEmbarcacao: string;
-  responsavelInspecao: string;
-  horarioInicio: Date;
-  horarioFim: Date;
-  createdAt: Date;
+export function addMinutes(date: Date, minutes: number): Date {
+  const next = new Date(date);
+  next.setMinutes(next.getMinutes() + minutes);
+  return next;
 }
 
-export function serializeInspection(inspection: InspectionRecord) {
+import { Inspection } from "@prisma/client";
+
+export function serializeInspection(inspection: Inspection) {
   return {
     id: inspection.id,
     nome: inspection.nome,
     nomeEmbarcacao: inspection.nomeEmbarcacao,
     responsavelInspecao: inspection.responsavelInspecao,
+    celular: inspection.celular,
+    local: inspection.local,
     horarioInicio: formatDateTime(inspection.horarioInicio),
     horarioFim: formatDateTime(inspection.horarioFim),
+    observacoes: inspection.observacoes,
+    status: inspection.status,
     createdAt: formatDateTime(inspection.createdAt),
   };
 }

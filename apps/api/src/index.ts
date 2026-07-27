@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import routes from "./routes";
 import { authMiddleware } from "./middlewares/auth";
 import { errorHandler } from "./middlewares/errorHandler";
+import { ensureAdminUser } from "./lib/ensureAdminUser";
 
 const app = express();
 const port = Number(process.env.API_PORT) || 3333;
@@ -22,6 +23,15 @@ app.use(authMiddleware);
 app.use("/api", routes);
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`API rodando em http://localhost:${port}`);
+async function bootstrap() {
+  await ensureAdminUser();
+
+  app.listen(port, () => {
+    console.log(`API rodando em http://localhost:${port}`);
+  });
+}
+
+bootstrap().catch((error) => {
+  console.error("Falha ao iniciar a API:", error);
+  process.exit(1);
 });

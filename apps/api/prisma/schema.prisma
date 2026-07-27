@@ -1,77 +1,69 @@
 generator client {
-
   provider = "prisma-client-js"
-
 }
-
-
 
 datasource db {
-
   provider = "mysql"
-
   url      = env("DATABASE_URL")
-
 }
-
-
 
 enum Permission {
-
   read
-
   write
-
   readwrite
-
 }
 
+enum InspectionLocation {
+  cabanga
+  recife_marina
+}
 
+enum InspectionStatus {
+  pendente
+  confirmada
+  realizada
+  cancelada
+}
 
 model User {
-
   id         String     @id @default(uuid())
-
   login      String     @unique
-
   password   String
-
   permission Permission
-
   token      String?    @db.Text
-
   createdAt  DateTime   @default(now()) @map("created_at")
-
   updatedAt  DateTime   @updatedAt @map("updated_at")
 
-
-
   @@map("users")
-
 }
 
+model AvailabilitySlot {
+  id            String             @id @default(uuid())
+  local         InspectionLocation
+  horarioInicio DateTime           @map("horario_inicio")
+  horarioFim    DateTime           @map("horario_fim")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  inspection    Inspection?
 
+  @@unique([local, horarioInicio])
+  @@map("availability_slots")
+}
 
 model Inspection {
-
-  id                  String   @id @default(uuid())
-
-  nome                String
-
-  nomeEmbarcacao      String   @map("nome_embarcacao")
-
-  responsavelInspecao String   @map("responsavel_inspecao")
-
-  horarioInicio       DateTime @map("horario_inicio")
-
-  horarioFim          DateTime @map("horario_fim")
-
-  createdAt           DateTime @default(now()) @map("created_at")
-
-
+  id                 String             @id @default(uuid())
+  nome               String
+  nomeEmbarcacao     String             @map("nome_embarcacao")
+  responsavelInspecao String            @map("responsavel_inspecao")
+  celular            String
+  local              InspectionLocation @default(cabanga)
+  horarioInicio      DateTime           @map("horario_inicio")
+  horarioFim         DateTime           @map("horario_fim")
+  observacoes        String?            @db.Text
+  status             InspectionStatus   @default(pendente)
+  availabilitySlotId String?            @unique @map("availability_slot_id")
+  availabilitySlot   AvailabilitySlot?  @relation(fields: [availabilitySlotId], references: [id], onDelete: SetNull)
+  createdAt          DateTime           @default(now()) @map("created_at")
 
   @@map("inspections")
-
 }
-
-

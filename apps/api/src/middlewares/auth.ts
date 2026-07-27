@@ -7,6 +7,7 @@ const PUBLIC_ROUTES = [
   { method: "GET", path: "/api/health" },
   { method: "POST", path: "/api/login" },
   { method: "POST", path: "/api/logout" },
+  { method: "POST", path: "/api/inspections/datasDisponiveis" },
   { method: "POST", path: "/api/inspections/horariosDisponiveis" },
   { method: "POST", path: "/api/inspections" },
 ];
