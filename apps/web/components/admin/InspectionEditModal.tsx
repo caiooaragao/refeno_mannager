@@ -326,8 +326,9 @@ export function InspectionEditModal({
         <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
           <FormField
             id="edit-nome"
-            label="Nome"
+            label="Nome do comandante"
             type="text"
+            placeholder="Nome do comandante"
             value={form.nome}
             onChange={(e) => handleChange("nome", e.target.value)}
             disabled={loading}
@@ -336,6 +337,7 @@ export function InspectionEditModal({
           <FormField
             id="edit-nomeEmbarcacao"
             label="Nome da embarcação"
+            placeholder="Nome da embarcação"
             type="text"
             value={form.nomeEmbarcacao}
             onChange={(e) => handleChange("nomeEmbarcacao", e.target.value)}
@@ -345,6 +347,7 @@ export function InspectionEditModal({
           <FormField
             id="edit-responsavelInspecao"
             label="Responsável pela inspeção"
+            placeholder="Nome do responsável pela inspeção"
             type="text"
             value={form.responsavelInspecao}
             onChange={(e) => handleChange("responsavelInspecao", e.target.value)}
