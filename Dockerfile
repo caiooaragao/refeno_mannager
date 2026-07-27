@@ -25,7 +25,7 @@ COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
 WORKDIR /app/apps/api
 EXPOSE 3333
-CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && node dist/index.js"]
+CMD ["sh", "-c", "npx --yes prisma@6.19.3 migrate deploy && npx --yes prisma@6.19.3 db seed && node dist/index.js"]
 
 FROM base AS web
 ENV NODE_ENV=production

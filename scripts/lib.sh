@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 REFENO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PRISMA_VERSION="6.19.3"
 
 step() {
   echo ""
@@ -150,19 +151,26 @@ wait_api() {
   fail "API não respondeu a tempo. Veja: sh docker-app.sh logs"
 }
 
-run_migrations() {
+run_prisma() {
+  local prisma_bin="${REFENO_ROOT}/node_modules/.bin/prisma"
+
   (
     cd "${REFENO_ROOT}/apps/api"
-    npx prisma migrate deploy
+    if [[ -x "$prisma_bin" ]]; then
+      "$prisma_bin" "$@"
+    else
+      npx --yes "prisma@${PRISMA_VERSION}" "$@"
+    fi
   )
+}
+
+run_migrations() {
+  run_prisma migrate deploy
   ok "Migrations aplicadas."
 }
 
 run_seed() {
-  (
-    cd "${REFENO_ROOT}/apps/api"
-    npx prisma db seed
-  )
+  run_prisma db seed
   ok "Usuário admin criado/atualizado."
 }
 
