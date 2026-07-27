@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { DEFAULT_THEME } from "@/lib/theme";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 export function ThemeToggle() {
@@ -11,7 +12,7 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const isDark = !mounted || theme === "dark";
+  const isDark = mounted ? theme === "dark" : DEFAULT_THEME === "dark";
 
   return (
     <button

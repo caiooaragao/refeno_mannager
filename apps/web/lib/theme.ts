@@ -1,9 +1,14 @@
 export type Theme = "dark" | "light";
 
 export const THEME_COOKIE = "theme";
+export const DEFAULT_THEME: Theme = "light";
 
 export function parseTheme(value: string | undefined): Theme {
-  return value === "light" ? "light" : "dark";
+  if (value === "dark" || value === "light") {
+    return value;
+  }
+
+  return DEFAULT_THEME;
 }
 
 export function setThemeCookie(theme: Theme) {
