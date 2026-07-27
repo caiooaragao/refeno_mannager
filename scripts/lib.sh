@@ -66,27 +66,67 @@ mysql_container_running() {
   docker compose ps mysql --status running -q 2>/dev/null | grep -q .
 }
 
+load_root_env() {
+  if [[ -f "${REFENO_ROOT}/.env" ]]; then
+    set -a
+    # shellcheck disable=SC1091
+    source "${REFENO_ROOT}/.env"
+    set +a
+  fi
+
+  MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-root}"
+  MYSQL_DATABASE="${MYSQL_DATABASE:-refeno_manager}"
+  MYSQL_USER="${MYSQL_USER:-refeno}"
+  MYSQL_PASSWORD="${MYSQL_PASSWORD:-refeno}"
+  JWT_SECRET="${JWT_SECRET:-change-me-in-production}"
+  JWT_EXPIRES_IN="${JWT_EXPIRES_IN:-24h}"
+  FRONTEND_URL="${FRONTEND_URL:-http://localhost:3000}"
+  SEED_ADMIN_LOGIN="${SEED_ADMIN_LOGIN:-dantenovaes}"
+  SEED_ADMIN_PASSWORD="${SEED_ADMIN_PASSWORD:-danterefeno}"
+  NEXT_PUBLIC_API_URL="${NEXT_PUBLIC_API_URL:-http://localhost:3333}"
+  NEXT_PUBLIC_ADMIN_USER="${NEXT_PUBLIC_ADMIN_USER:-dantenovaes}"
+  NEXT_PUBLIC_ADMIN_PASSWORD="${NEXT_PUBLIC_ADMIN_PASSWORD:-danterefeno}"
+}
+
 ensure_env_files() {
+  load_root_env
+
+  if [[ ! -f "${REFENO_ROOT}/.env" ]]; then
+    cp "${REFENO_ROOT}/.env.example" "${REFENO_ROOT}/.env"
+    load_root_env
+    ok "Criado .env"
+  fi
+
   if [[ ! -f "${REFENO_ROOT}/apps/api/.env" ]]; then
-    cp "${REFENO_ROOT}/.env.example" "${REFENO_ROOT}/apps/api/.env"
+    cat > "${REFENO_ROOT}/apps/api/.env" <<EOF
+DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}
+API_PORT=3333
+JWT_SECRET=${JWT_SECRET}
+JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+FRONTEND_URL=${FRONTEND_URL}
+SEED_ADMIN_LOGIN=${SEED_ADMIN_LOGIN}
+SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD}
+EOF
     ok "Criado apps/api/.env"
   fi
 
   if [[ ! -f "${REFENO_ROOT}/apps/web/.env.local" ]]; then
     cat > "${REFENO_ROOT}/apps/web/.env.local" <<EOF
-NEXT_PUBLIC_API_URL=http://localhost:3333
-NEXT_PUBLIC_ADMIN_USER=dantenovaes
-NEXT_PUBLIC_ADMIN_PASSWORD=danterefeno
+NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+NEXT_PUBLIC_ADMIN_USER=${NEXT_PUBLIC_ADMIN_USER}
+NEXT_PUBLIC_ADMIN_PASSWORD=${NEXT_PUBLIC_ADMIN_PASSWORD}
 EOF
     ok "Criado apps/web/.env.local"
   fi
 }
 
 wait_mysql() {
+  load_root_env
+
   step "Aguardando MySQL ficar pronto..."
 
   for _ in $(seq 1 30); do
-    if docker compose exec -T mysql mysqladmin ping -h localhost -u root -proot --silent 2>/dev/null; then
+    if docker compose exec -T mysql mysqladmin ping -h localhost -u root "-p${MYSQL_ROOT_PASSWORD}" --silent 2>/dev/null; then
       ok "MySQL pronto."
       return 0
     fi

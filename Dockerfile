@@ -12,7 +12,8 @@ COPY apps/api apps/api
 COPY apps/web apps/web
 RUN npm run db:generate -w apps/api
 RUN npm run build -w apps/api
-ENV NEXT_PUBLIC_API_URL=http://localhost:3333
+ARG NEXT_PUBLIC_API_URL=http://localhost:3333
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 RUN npm run build -w apps/web
 
 FROM base AS api

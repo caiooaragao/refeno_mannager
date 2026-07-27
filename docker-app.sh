@@ -55,6 +55,7 @@ require_mysql() {
 }
 
 cmd_up() {
+  ensure_env_files
   require_mysql
 
   step "Subindo API e Web com Docker..."
@@ -76,6 +77,7 @@ cmd_down() {
 }
 
 cmd_api() {
+  ensure_env_files
   require_mysql
 
   step "Rebuild e start da API..."
@@ -85,6 +87,7 @@ cmd_api() {
 }
 
 cmd_web() {
+  ensure_env_files
   require_mysql
 
   step "Rebuild e start do Web..."

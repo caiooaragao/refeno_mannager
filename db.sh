@@ -47,6 +47,7 @@ parse_args() {
 
 cmd_up() {
   require_docker
+  ensure_env_files
 
   if mysql_container_running; then
     ok "MySQL já está rodando."

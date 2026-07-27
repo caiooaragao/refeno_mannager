@@ -16,14 +16,22 @@ Monorepo com formulário de inspeção de embarcações.
 
 ```bash
 npm install
-cp .env.example apps/api/.env
+cp .env.example .env
 ```
 
-Crie `apps/web/.env.local`:
+Os scripts `db.sh`, `dev.sh` e `run.sh` também criam `apps/api/.env` e `apps/web/.env.local` automaticamente se não existirem.
 
-```
-NEXT_PUBLIC_API_URL=http://localhost:3333
-```
+Variáveis principais (arquivo `.env` na raiz — usado pelo Docker Compose):
+
+| Variável | Uso |
+|----------|-----|
+| `MYSQL_*` | Credenciais do banco nos containers |
+| `JWT_SECRET` | Tokens de autenticação da API |
+| `FRONTEND_URL` | Origem permitida no CORS |
+| `NEXT_PUBLIC_API_URL` | URL da API no build do front (Docker) |
+| `SEED_ADMIN_*` | Login/senha do admin inicial |
+
+Em produção, altere senhas e URLs antes do deploy.
 
 ## Banco de dados
 
