@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { PoliticaDePrivacidadeModal } from "@/components/politica-de-privacidade/PoliticaDePrivacidadeModal";
 import { useConfirm } from "@/components/ui/ConfirmProvider";
 import {
   createInspection,
@@ -81,6 +82,8 @@ export function RefenoForm() {
   const [slotsError, setSlotsError] = useState<string | null>(null);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const formTopRef = useRef<HTMLDivElement>(null);
   const pendingScrollRef = useRef(false);
 
@@ -244,6 +247,13 @@ export function RefenoForm() {
       return;
     }
 
+    if (!privacyAccepted) {
+      showFormError(
+        "Você precisa declarar que leu e está de acordo com a Política de Privacidade"
+      );
+      return;
+    }
+
     const selectedSlot = availableSlots.find(
       (slot) => slot.disponivel && getSlotTime(slot.inicio) === form.horarioSlot
     );
@@ -281,6 +291,7 @@ export function RefenoForm() {
       setTimeout(() => {
         setSuccessData(registered);
         setForm(initialForm);
+        setPrivacyAccepted(false);
         setAvailableDates([]);
         setAvailableSlots([]);
         setFormExiting(false);
@@ -296,6 +307,7 @@ export function RefenoForm() {
 
   function handleNewInspection() {
     setSuccessData(null);
+    setPrivacyAccepted(false);
     setError(null);
     setDatesError(null);
     setSlotsError(null);
@@ -447,9 +459,44 @@ export function RefenoForm() {
               </div>
             </div>
 
+            <div className="mt-1 flex flex-col gap-1">
+              <label className="flex cursor-pointer items-start gap-2.5">
+                <input
+                  type="checkbox"
+                  checked={privacyAccepted}
+                  onChange={(e) => {
+                    setPrivacyAccepted(e.target.checked);
+                    setError(null);
+                  }}
+                  disabled={loading}
+                  className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+                />
+                <span className="text-xs leading-relaxed text-on-surface">
+                  Declaro que li e estou de acordo com a política de
+                  privacidade
+                </span>
+              </label>
+
+              <button
+                type="button"
+                onClick={() => setShowPrivacyModal(true)}
+                className="cursor-pointer text-left text-xs text-black underline"
+              >
+                Ler política de privacidade
+              </button>
+            </div>
+
+            {showPrivacyModal && (
+              <PoliticaDePrivacidadeModal
+                onClose={() => setShowPrivacyModal(false)}
+              />
+            )}
+
             <button
               type="submit"
-              disabled={loading || loadingDates || loadingSlots}
+              disabled={
+                loading || loadingDates || loadingSlots || !privacyAccepted
+              }
               className="forest-btn-primary mt-1 w-full text-sm sm:w-auto"
             >
               {loading ? "Enviando..." : "Cadastrar inspeção"}
